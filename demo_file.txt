@@ -1,0 +1,20 @@
+Computer Networks Final Project: Error Detection and Correction System.
+Team: Mohit Seth (24BCE2950) & Vinayak Sangram Patil (24BCE2147).
+Architecture: Client -> Relay -> Server.
+Features: Hamming(7,4) FEC, bit-level interleaving, XOR parity frames,
+CRC-16-CCITT detection and SHA-256 integrity verification.
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Error Correction allows recovery without retransmission!
+Forward Er

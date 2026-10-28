@@ -1,0 +1,161 @@
+model,burst_bits,config,trials,recovered,percent,silent_corruption
+single,1,Hamming only,200,200,100.0,0
+single,1,+ Interleave d=32,200,200,100.0,0
+single,1,+ Interleave d=512,200,200,100.0,0
+single,1,d=32 + XOR parity,200,200,100.0,0
+single,1,d=512 + XOR parity,200,200,100.0,0
+single,2,Hamming only,200,35,17.5,0
+single,2,+ Interleave d=32,200,200,100.0,0
+single,2,+ Interleave d=512,200,200,100.0,0
+single,2,d=32 + XOR parity,200,200,100.0,0
+single,2,d=512 + XOR parity,200,200,100.0,0
+single,4,Hamming only,200,0,0.0,0
+single,4,+ Interleave d=32,200,200,100.0,0
+single,4,+ Interleave d=512,200,200,100.0,0
+single,4,d=32 + XOR parity,200,200,100.0,0
+single,4,d=512 + XOR parity,200,200,100.0,0
+single,8,Hamming only,200,0,0.0,0
+single,8,+ Interleave d=32,200,200,100.0,0
+single,8,+ Interleave d=512,200,200,100.0,0
+single,8,d=32 + XOR parity,200,200,100.0,0
+single,8,d=512 + XOR parity,200,200,100.0,0
+single,16,Hamming only,200,0,0.0,0
+single,16,+ Interleave d=32,200,200,100.0,0
+single,16,+ Interleave d=512,200,200,100.0,0
+single,16,d=32 + XOR parity,200,200,100.0,0
+single,16,d=512 + XOR parity,200,200,100.0,0
+single,32,Hamming only,200,0,0.0,0
+single,32,+ Interleave d=32,200,200,100.0,0
+single,32,+ Interleave d=512,200,200,100.0,0
+single,32,d=32 + XOR parity,200,200,100.0,0
+single,32,d=512 + XOR parity,200,200,100.0,0
+single,33,Hamming only,200,0,0.0,0
+single,33,+ Interleave d=32,200,22,11.0,0
+single,33,+ Interleave d=512,200,200,100.0,0
+single,33,d=32 + XOR parity,200,200,100.0,0
+single,33,d=512 + XOR parity,200,200,100.0,0
+single,48,Hamming only,200,0,0.0,0
+single,48,+ Interleave d=32,200,13,6.5,0
+single,48,+ Interleave d=512,200,200,100.0,0
+single,48,d=32 + XOR parity,200,200,100.0,0
+single,48,d=512 + XOR parity,200,200,100.0,0
+single,64,Hamming only,200,0,0.0,0
+single,64,+ Interleave d=32,200,1,0.5,0
+single,64,+ Interleave d=512,200,200,100.0,0
+single,64,d=32 + XOR parity,200,200,100.0,0
+single,64,d=512 + XOR parity,200,200,100.0,0
+single,128,Hamming only,200,0,0.0,0
+single,128,+ Interleave d=32,200,0,0.0,0
+single,128,+ Interleave d=512,200,200,100.0,0
+single,128,d=32 + XOR parity,200,200,100.0,0
+single,128,d=512 + XOR parity,200,200,100.0,0
+single,224,Hamming only,200,0,0.0,0
+single,224,+ Interleave d=32,200,0,0.0,0
+single,224,+ Interleave d=512,200,200,100.0,0
+single,224,d=32 + XOR parity,200,200,100.0,0
+single,224,d=512 + XOR parity,200,200,100.0,0
+single,448,Hamming only,200,0,0.0,0
+single,448,+ Interleave d=32,200,0,0.0,0
+single,448,+ Interleave d=512,200,200,100.0,0
+single,448,d=32 + XOR parity,200,200,100.0,0
+single,448,d=512 + XOR parity,200,200,100.0,0
+single,500,Hamming only,200,0,0.0,0
+single,500,+ Interleave d=32,200,0,0.0,0
+single,500,+ Interleave d=512,200,200,100.0,0
+single,500,d=32 + XOR parity,200,200,100.0,0
+single,500,d=512 + XOR parity,200,200,100.0,0
+single,512,Hamming only,200,0,0.0,0
+single,512,+ Interleave d=32,200,0,0.0,0
+single,512,+ Interleave d=512,200,200,100.0,0
+single,512,d=32 + XOR parity,200,200,100.0,0
+single,512,d=512 + XOR parity,200,200,100.0,0
+single,513,Hamming only,200,0,0.0,0
+single,513,+ Interleave d=32,200,0,0.0,0
+single,513,+ Interleave d=512,200,0,0.0,0
+single,513,d=32 + XOR parity,200,200,100.0,0
+single,513,d=512 + XOR parity,200,200,100.0,0
+single,1000,Hamming only,200,0,0.0,0
+single,1000,+ Interleave d=32,200,0,0.0,0
+single,1000,+ Interleave d=512,200,0,0.0,0
+single,1000,d=32 + XOR parity,200,200,100.0,0
+single,1000,d=512 + XOR parity,200,200,100.0,0
+stream,1,Hamming only,200,200,100.0,0
+stream,1,+ Interleave d=32,200,200,100.0,0
+stream,1,+ Interleave d=512,200,200,100.0,0
+stream,1,d=32 + XOR parity,200,200,100.0,0
+stream,1,d=512 + XOR parity,200,200,100.0,0
+stream,2,Hamming only,200,23,11.5,0
+stream,2,+ Interleave d=32,200,200,100.0,0
+stream,2,+ Interleave d=512,200,200,100.0,0
+stream,2,d=32 + XOR parity,200,200,100.0,0
+stream,2,d=512 + XOR parity,200,200,100.0,0
+stream,4,Hamming only,200,0,0.0,0
+stream,4,+ Interleave d=32,200,200,100.0,0
+stream,4,+ Interleave d=512,200,200,100.0,0
+stream,4,d=32 + XOR parity,200,200,100.0,0
+stream,4,d=512 + XOR parity,200,200,100.0,0
+stream,8,Hamming only,200,0,0.0,0
+stream,8,+ Interleave d=32,200,200,100.0,0
+stream,8,+ Interleave d=512,200,200,100.0,0
+stream,8,d=32 + XOR parity,200,200,100.0,0
+stream,8,d=512 + XOR parity,200,200,100.0,0
+stream,16,Hamming only,200,0,0.0,0
+stream,16,+ Interleave d=32,200,200,100.0,0
+stream,16,+ Interleave d=512,200,200,100.0,0
+stream,16,d=32 + XOR parity,200,200,100.0,0
+stream,16,d=512 + XOR parity,200,200,100.0,0
+stream,32,Hamming only,200,0,0.0,0
+stream,32,+ Interleave d=32,200,200,100.0,0
+stream,32,+ Interleave d=512,200,200,100.0,0
+stream,32,d=32 + XOR parity,200,200,100.0,0
+stream,32,d=512 + XOR parity,200,200,100.0,0
+stream,33,Hamming only,200,0,0.0,0
+stream,33,+ Interleave d=32,200,22,11.0,0
+stream,33,+ Interleave d=512,200,200,100.0,0
+stream,33,d=32 + XOR parity,200,200,100.0,0
+stream,33,d=512 + XOR parity,200,200,100.0,0
+stream,48,Hamming only,200,0,0.0,0
+stream,48,+ Interleave d=32,200,18,9.0,0
+stream,48,+ Interleave d=512,200,200,100.0,0
+stream,48,d=32 + XOR parity,200,200,100.0,0
+stream,48,d=512 + XOR parity,200,200,100.0,0
+stream,64,Hamming only,200,0,0.0,0
+stream,64,+ Interleave d=32,200,1,0.5,0
+stream,64,+ Interleave d=512,200,200,100.0,0
+stream,64,d=32 + XOR parity,200,200,100.0,0
+stream,64,d=512 + XOR parity,200,200,100.0,0
+stream,128,Hamming only,200,0,0.0,0
+stream,128,+ Interleave d=32,200,0,0.0,0
+stream,128,+ Interleave d=512,200,200,100.0,0
+stream,128,d=32 + XOR parity,200,197,98.5,0
+stream,128,d=512 + XOR parity,200,200,100.0,0
+stream,224,Hamming only,200,0,0.0,0
+stream,224,+ Interleave d=32,200,0,0.0,0
+stream,224,+ Interleave d=512,200,200,100.0,0
+stream,224,d=32 + XOR parity,200,197,98.5,0
+stream,224,d=512 + XOR parity,200,200,100.0,0
+stream,448,Hamming only,200,0,0.0,0
+stream,448,+ Interleave d=32,200,0,0.0,0
+stream,448,+ Interleave d=512,200,200,100.0,0
+stream,448,d=32 + XOR parity,200,175,87.5,0
+stream,448,d=512 + XOR parity,200,200,100.0,0
+stream,500,Hamming only,200,0,0.0,0
+stream,500,+ Interleave d=32,200,0,0.0,0
+stream,500,+ Interleave d=512,200,200,100.0,0
+stream,500,d=32 + XOR parity,200,176,88.0,0
+stream,500,d=512 + XOR parity,200,200,100.0,0
+stream,512,Hamming only,200,0,0.0,0
+stream,512,+ Interleave d=32,200,0,0.0,0
+stream,512,+ Interleave d=512,200,200,100.0,0
+stream,512,d=32 + XOR parity,200,175,87.5,0
+stream,512,d=512 + XOR parity,200,200,100.0,0
+stream,513,Hamming only,200,0,0.0,0
+stream,513,+ Interleave d=32,200,0,0.0,0
+stream,513,+ Interleave d=512,200,31,15.5,0
+stream,513,d=32 + XOR parity,200,174,87.0,0
+stream,513,d=512 + XOR parity,200,200,100.0,0
+stream,1000,Hamming only,200,0,0.0,0
+stream,1000,+ Interleave d=32,200,0,0.0,0
+stream,1000,+ Interleave d=512,200,2,1.0,0
+stream,1000,d=32 + XOR parity,200,144,72.0,0
+stream,1000,d=512 + XOR parity,200,200,100.0,0

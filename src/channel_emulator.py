@@ -73,6 +73,19 @@ class ChannelEmulator:
         
         return bytes(corrupted), burst_length
     
+    def corrupt_at(self, data: bytes, start_bit: int, length: int) -> bytes:
+        """
+        Flip exactly `length` contiguous bits starting at `start_bit`
+        (deterministic; used by tests and the burst-length sweep).
+        """
+        total_bits = len(data) * 8
+        if length < 0 or start_bit < 0 or start_bit + length > total_bits:
+            raise ValueError(f"Burst [{start_bit}, {start_bit + length}) outside {total_bits} bits")
+        out = bytearray(data)
+        for pos in range(start_bit, start_bit + length):
+            out[pos // 8] ^= 1 << (7 - pos % 8)
+        return bytes(out)
+    
     def get_stats(self) -> dict:
         return {
             "frames_seen": self.frames_seen,
@@ -114,6 +127,8 @@ def channel_emulator_test():
     
     stats = emulator.get_stats()
     if n_flipped == diff_bits and stats['frames_corrupted'] == 1:
+        fixed = emulator.corrupt_at(test_data, 13, 40)
+        assert sum(bin(b).count('1') for b in fixed) == 40 and fixed[1] & 0x07 == 0x07
         print("  [PASS] Channel emulator test passed!")
     else:
         print("  [FAIL] Channel emulator test failed!")

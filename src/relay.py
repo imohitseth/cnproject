@@ -1,14 +1,26 @@
 """
 Relay Process - Emulated Network Layer with Diagnostic Tracing.
 
+The relay corrupts only the encoded payload of data/parity frames. Headers,
+metadata and END frames pass through intact (header kept outside the corruption
+zone, as in the design).
+
+Demo / experiment controls:
+    --target-frames 3,P1   corrupt only these frames (P<n> = parity frame of group n)
+    --drop-frames 2        drop these frames entirely (UDP only: models frame loss)
+    --seed N               reproducible bursts
+    --min-burst 40 --max-burst 40   fixed-length burst (e.g. past the depth-32 limit)
+
 Usage:
     python -m src.relay [--port RELAY_PORT] [--server-port SERVER_PORT] 
                         [--proto tcp|udp] [--corruption-prob PROB]
                         [--min-burst MIN] [--max-burst MAX] [--verbose]
+                        [--target-frames IDS] [--drop-frames IDS] [--seed N]
 """
 
 import socket
 import argparse
+import random
 import sys
 import os
 
@@ -17,17 +29,22 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.channel_emulator import ChannelEmulator
 from src.protocol import wrap_message, unwrap_message, RecvBuffer
-from src.framing import HEADER_SIZE, parse_frame_header
+from src.framing import HEADER_SIZE, parse_frame_header, frame_label, parse_frame_selector
 
 
 def run_tcp_relay(relay_port: int, server_port: int, corruption_prob: float,
-                  min_burst: int, max_burst: int, verbose: bool = False):
+                  min_burst: int, max_burst: int, verbose: bool = False,
+                  target_frames=None, drop_frames=None):
     """Run TCP relay with RecvBuffer framing and bidirectional forwarding."""
     print("=" * 65)
     print(f"[*] Starting TCP Relay on port {relay_port} -> Server port {server_port}")
     print(f"[*] Burst Error Settings: Prob={corruption_prob:.2f}, Range=[{min_burst}, {max_burst}] bits")
     if verbose:
         print("[*] Verbose Tracing: ENABLED (Detailed bit offsets will be logged)")
+    if target_frames:
+        print(f"[*] Corrupting only frames: {sorted(frame_label(i) for i in target_frames)}")
+    if drop_frames:
+        print("[*] --drop-frames ignored for TCP (a reliable stream cannot lose frames)")
     print("=" * 65)
     
     emulator = ChannelEmulator(
@@ -73,17 +90,21 @@ def run_tcp_relay(relay_port: int, server_port: int, corruption_prob: float,
                     payload = frame_data[HEADER_SIZE:]
                     
                     frame_id, orig_len, _ = parse_frame_header(header)
-                    corrupted_payload, n_flipped = emulator.corrupt_burst(payload)
+                    label = frame_label(frame_id)
+                    if target_frames and frame_id not in target_frames:
+                        corrupted_payload, n_flipped = payload, 0
+                    else:
+                        corrupted_payload, n_flipped = emulator.corrupt_burst(payload)
                     frame_data = header + corrupted_payload
                     
                     if n_flipped > 0:
                         info = emulator.last_burst_info
-                        print(f"  [Relay] Frame #{frame_id}: INJECTED burst error ({n_flipped} bits flipped)")
+                        print(f"  [Relay] Frame {label}: INJECTED burst error ({n_flipped} bits flipped)")
                         if verbose:
                             print(f"          -> Channel Bit Offset: {info['start_bit']} (Byte {info['byte_index']}, bit {info['bit_in_byte']})")
                             print(f"          -> Bit Range Corrupted: [{info['start_bit']} .. {info['start_bit'] + n_flipped - 1}]")
                     else:
-                        print(f"  [Relay] Frame #{frame_id}: Transmitted cleanly (no corruption)")
+                        print(f"  [Relay] Frame {label}: Transmitted cleanly (no corruption)")
                 elif msg_type == 1:
                     print("  [Relay] Metadata frame received -> Forwarding intact")
                 elif msg_type == 3:
@@ -105,11 +126,16 @@ def run_tcp_relay(relay_port: int, server_port: int, corruption_prob: float,
 
 
 def run_udp_relay(relay_port: int, server_port: int, corruption_prob: float,
-                  min_burst: int, max_burst: int, verbose: bool = False):
+                  min_burst: int, max_burst: int, verbose: bool = False,
+                  target_frames=None, drop_frames=None):
     """Run UDP relay forwarding packets with burst corruption."""
     print("=" * 65)
     print(f"[*] Starting UDP Relay on port {relay_port} -> Server port {server_port}")
     print(f"[*] Burst Error Settings: Prob={corruption_prob:.2f}, Range=[{min_burst}, {max_burst}] bits")
+    if target_frames:
+        print(f"[*] Corrupting only frames: {sorted(frame_label(i) for i in target_frames)}")
+    if drop_frames:
+        print(f"[*] Dropping frames: {sorted(frame_label(i) for i in drop_frames)}")
     print("=" * 65)
     
     emulator = ChannelEmulator(
@@ -142,15 +168,22 @@ def run_udp_relay(relay_port: int, server_port: int, corruption_prob: float,
                 header = frame_data[:HEADER_SIZE]
                 payload = frame_data[HEADER_SIZE:]
                 frame_id, orig_len, _ = parse_frame_header(header)
-                corrupted_payload, n_flipped = emulator.corrupt_burst(payload)
+                label = frame_label(frame_id)
+                if drop_frames and frame_id in drop_frames:
+                    print(f"  [Relay] UDP Frame {label}: DROPPED (frame loss)")
+                    continue
+                if target_frames and frame_id not in target_frames:
+                    corrupted_payload, n_flipped = payload, 0
+                else:
+                    corrupted_payload, n_flipped = emulator.corrupt_burst(payload)
                 frame_data = header + corrupted_payload
                 if n_flipped > 0:
                     info = emulator.last_burst_info
-                    print(f"  [Relay] UDP Frame #{frame_id}: INJECTED burst error ({n_flipped} bits flipped)")
+                    print(f"  [Relay] UDP Frame {label}: INJECTED burst error ({n_flipped} bits flipped)")
                     if verbose:
                         print(f"          -> Channel Bit Offset: {info['start_bit']} (Byte {info['byte_index']}, bit {info['bit_in_byte']})")
                 else:
-                    print(f"  [Relay] UDP Frame #{frame_id}: Transmitted cleanly")
+                    print(f"  [Relay] UDP Frame {label}: Transmitted cleanly")
             elif msg_type == 1:
                 print("  [Relay] UDP Metadata frame received -> Forwarding intact")
             elif msg_type == 3:
@@ -176,18 +209,27 @@ def main():
     parser.add_argument('--min-burst', type=int, default=1, 
                         help='Minimum burst bits (default: 1)')
     parser.add_argument('--max-burst', type=int, default=16, 
-                        help='Maximum burst bits (default: 16, max correctable is 32)')
+                        help='Maximum burst bits (default: 16; Hamming+interleave alone corrects up to 32)')
+    parser.add_argument('--target-frames', default='',
+                        help='Corrupt only these frames, e.g. "3" or "2,P1" (P<n> = parity frame of group n)')
+    parser.add_argument('--drop-frames', default='',
+                        help='Drop these frames entirely (UDP only), e.g. "2"')
+    parser.add_argument('--seed', type=int, default=None, help='Random seed for reproducible bursts')
     parser.add_argument('-v', '--verbose', action='store_true', 
                         help='Enable verbose bit-offset logging')
     
     args = parser.parse_args()
+    if args.seed is not None:
+        random.seed(args.seed)
+    targets = parse_frame_selector(args.target_frames) or None
+    drops = parse_frame_selector(args.drop_frames) or None
     
     if args.proto == 'tcp':
         run_tcp_relay(args.port, args.server_port, args.corruption_prob, 
-                      args.min_burst, args.max_burst, args.verbose)
+                      args.min_burst, args.max_burst, args.verbose, targets, drops)
     else:
         run_udp_relay(args.port, args.server_port, args.corruption_prob,
-                      args.min_burst, args.max_burst, args.verbose)
+                      args.min_burst, args.max_burst, args.verbose, targets, drops)
 
 
 if __name__ == '__main__':

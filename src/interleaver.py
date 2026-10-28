@@ -44,6 +44,17 @@ BYTES_PER_BLOCK = 28           # 224 / 8 = 28 bytes
 ENCODED_PAYLOAD_SIZE = 448     # 16 * 28 = 448 bytes
 RAW_PAYLOAD_SIZE = 256         # 256 bytes
 
+# Depth must divide 512 (no short last block) and be a multiple of 8
+# (depth * 7 bits is then a whole number of bytes per block).
+VALID_DEPTHS = (8, 16, 32, 64, 128, 256, 512)
+
+
+def validate_depth(depth: int) -> int:
+    """Return `depth` if it is a supported interleave depth, else raise ValueError."""
+    if depth not in VALID_DEPTHS:
+        raise ValueError(f"Unsupported interleave depth {depth}; choose one of {VALID_DEPTHS}")
+    return depth
+
 
 def bytes_to_bits(data: bytes) -> List[int]:
     """Convert bytes to a list of bits (MSB to LSB)."""
@@ -188,6 +199,31 @@ def interleaver_test() -> bool:
         assert n_corr == burst_len
         print(f"  [PASS] Burst error of {burst_len} bits: 100% recovered ({n_corr} errors corrected)")
         
+    # 3. Depth sweep: any burst up to the depth is fully corrected, for every valid depth
+    for depth in VALID_DEPTHS:
+        inter = interleave_bytes(encoded, depth)
+        assert len(inter) == ENCODED_PAYLOAD_SIZE
+        for burst_len in sorted({1, depth // 2, depth}):
+            for start_bit in (0, 100, 224 - burst_len // 2, ENCODED_PAYLOAD_SIZE * 8 - burst_len):
+                corrupted = bytearray(inter)
+                for b in range(burst_len):
+                    pos = start_bit + b
+                    corrupted[pos // 8] ^= 1 << (7 - pos % 8)
+                deint = deinterleave_bytes(bytes(corrupted), CODEWORDS_PER_FRAME, depth)
+                dec, _, _ = hamming.decode_bytes(deint, NIBBLES_PER_FRAME)
+                assert dec == orig_data, f"depth={depth} burst={burst_len} start={start_bit}"
+    print(f"  [PASS] Depths {VALID_DEPTHS}: bursts up to the depth recovered at every position")
+
+    # 4. One bit past the depth, inside a single block, is NOT recoverable
+    corrupted = bytearray(interleaved)
+    for b in range(INTERLEAVE_DEPTH + 1):
+        pos = 10 + b
+        corrupted[pos // 8] ^= 1 << (7 - pos % 8)
+    deint = deinterleave_bytes(bytes(corrupted), CODEWORDS_PER_FRAME, INTERLEAVE_DEPTH)
+    dec, _, _ = hamming.decode_bytes(deint, NIBBLES_PER_FRAME)
+    assert dec != orig_data
+    print("  [PASS] Burst of depth+1 inside one block exceeds Hamming (limit confirmed)")
+
     print("  [PASS] All interleaver tests passed!")
     return True
 
